@@ -26,13 +26,18 @@ abstract class OpenStreetMapFlutterPlatformInterface extends PlatformInterface {
 
   Widget buildView(
       // int creationId,
-      // PlatformViewCreatedCallback onPlatformViewCreated,
       {
+        required PlatformViewCreatedCallback onPlatformViewCreated,
         required CameraPosition initialCameraPosition,
         Set<Marker> markers = const <Marker>{},
         Set<Polyline> polylines = const <Polyline>{},
+        ArgumentCallback<CameraPosition>? onCameraMove = null,
         // Map<String, dynamic> mapOptions = const <String, dynamic>{},
       }) {
-    throw UnimplementedError('buildView() has not been implemented.');
+    throw UnimplementedError('`buildView(...)` has not been implemented.');
+  }
+
+  Future<void> setMarkers(Set<Marker> markers) {
+    throw UnimplementedError('`setMarkers(...)` has not been implemented.');
   }
 }

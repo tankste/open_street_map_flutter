@@ -1,11 +1,13 @@
-import 'package:flutter/foundation.dart' show immutable, objectRuntimeType;
+import 'package:flutter/foundation.dart' show objectRuntimeType;
 
-@immutable
 class LatLng {
+  static LatLng fromMap(Map<String, dynamic> map) => LatLng(
+        map["latitude"] as double,
+        map["longitude"] as double,
+      );
+
   const LatLng(double latitude, double longitude)
-      : assert(latitude != null),
-        assert(longitude != null),
-        latitude =
+      : latitude =
             latitude < -90.0 ? -90.0 : (90.0 < latitude ? 90.0 : latitude),
         longitude = longitude >= -180 && longitude < 180
             ? longitude
@@ -17,7 +19,7 @@ class LatLng {
 
   @override
   String toString() =>
-      '${objectRuntimeType(this, 'LatLng')}($latitude, $longitude)';
+      'LatLng($latitude, $longitude)';
 
   @override
   bool operator ==(Object other) {
@@ -28,14 +30,18 @@ class LatLng {
 
   @override
   int get hashCode => Object.hash(latitude, longitude);
+
+  Map<String, dynamic> toMap() => {
+        'latitude': latitude,
+        'longitude': longitude,
+      };
+
+  Map<String, dynamic> toJson() => toMap();
 }
 
-@immutable
 class LatLngBounds {
   LatLngBounds({required this.southwest, required this.northeast})
-      : assert(southwest != null),
-        assert(northeast != null),
-        assert(southwest.latitude <= northeast.latitude);
+      : assert(southwest.latitude <= northeast.latitude);
 
   final LatLng southwest;
 

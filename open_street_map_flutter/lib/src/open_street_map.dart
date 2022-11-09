@@ -23,7 +23,7 @@ class OpenStreetMap extends StatefulWidget {
 
   final VoidCallback? onCameraIdle;
 
-  final ArgumentCallback<LatLng>? onCameraMove;
+  final ArgumentCallback<CameraPosition>? onCameraMove;
 
   final ArgumentCallback<LatLng>? onTap;
 
@@ -32,22 +32,24 @@ class OpenStreetMap extends StatefulWidget {
 }
 
 class OpenStreetMapState extends State<OpenStreetMap> {
-  // MapConfiguration _mapConfiguration;
+  OpenStreetMapFlutterPlatformInterface platformInterface =
+      OpenStreetMapFlutterPlatformInterface.instance;
 
   @override
   Widget build(BuildContext context) {
-    return OpenStreetMapFlutterPlatformInterface.instance.buildView(
-        initialCameraPosition: widget.initialCameraPosition,
-        markers: widget.markers,
-        polylines: widget.polylines
-        // // _mapId,
-        // // onPlatformViewCreated,
-        // mapObjects: MapObjects(
-        //   markers: widget.markers,
-        //   polylines: widget.polylines,
-        // ),
-        // mapConfiguration: _mapConfiguration,
-        );
+    return platformInterface.buildView(
+      onPlatformViewCreated: onPlatformViewCreated,
+      initialCameraPosition: widget.initialCameraPosition,
+      markers: widget.markers,
+      polylines: widget.polylines,
+      onCameraMove: widget.onCameraMove,
+      // // _mapId,
+      // mapObjects: MapObjects(
+      //   markers: widget.markers,
+      //   polylines: widget.polylines,
+      // ),
+      // mapConfiguration: _mapConfiguration,
+    );
   }
 
   @override
@@ -59,4 +61,20 @@ class OpenStreetMapState extends State<OpenStreetMap> {
 // MapConfiguration _configurationFromWidget(OpenStreetMap widget) {
 //
 // }
+
+  Future<void> onPlatformViewCreated(int id) {
+    return platformInterface.init().then((value) {
+      _updateMarkers();
+    });
+  }
+
+  @override
+  void didUpdateWidget(OpenStreetMap oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _updateMarkers();
+  }
+
+  void _updateMarkers() {
+    OpenStreetMapFlutterPlatformInterface.instance.setMarkers(widget.markers);
+  }
 }

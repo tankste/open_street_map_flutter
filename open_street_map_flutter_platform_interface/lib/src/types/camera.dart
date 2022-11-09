@@ -1,16 +1,19 @@
-import 'package:flutter/foundation.dart' show immutable, objectRuntimeType;
+import 'package:flutter/foundation.dart' show objectRuntimeType;
 
 import 'types.dart';
 
-@immutable
 class CameraPosition {
-  const CameraPosition({
-    required this.target,
-    this.zoom = 0.0,
-  })  : assert(target != null),
-        assert(zoom != null);
+  static CameraPosition fromMap(Map<String, dynamic> map) => CameraPosition(
+        center: LatLng.fromMap(Map<String, dynamic>.from(map["center"])),
+        zoom: map["zoom"] as double,
+      );
 
-  final LatLng target;
+  const CameraPosition({
+    required this.center,
+    this.zoom = 0.0,
+  });
+
+  final LatLng center;
 
   final double zoom;
 
@@ -23,14 +26,15 @@ class CameraPosition {
       return false;
     }
     return other is CameraPosition &&
-        target == other.target &&
+        center == other.center &&
         zoom == other.zoom;
   }
 
   @override
-  int get hashCode => Object.hash(target, zoom);
+  int get hashCode => Object.hash(center, zoom);
 
   @override
-  String toString() =>
-      '$objectRuntimeType(target: $target, zoom: $zoom)';
+  String toString() => 'CameraPosition(center: $center, zoom: $zoom)';
+
+  Map<String, dynamic> toMap() => {'center': center.toMap(), 'zoom': zoom};
 }
