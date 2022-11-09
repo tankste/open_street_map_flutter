@@ -64,6 +64,7 @@ class OpenStreetMapState extends State<OpenStreetMap> {
 
   Future<void> onPlatformViewCreated(int id) {
     return platformInterface.init().then((value) {
+      _initCamera();
       _updateMarkers();
     });
   }
@@ -74,7 +75,11 @@ class OpenStreetMapState extends State<OpenStreetMap> {
     _updateMarkers();
   }
 
+  void _initCamera() {
+    platformInterface.setCameraPosition(widget.initialCameraPosition);
+  }
+
   void _updateMarkers() {
-    OpenStreetMapFlutterPlatformInterface.instance.setMarkers(widget.markers);
+    platformInterface.setMarkers(widget.markers);
   }
 }

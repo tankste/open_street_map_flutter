@@ -27,8 +27,6 @@ class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: B
     PlatformView,
     MethodChannel.MethodCallHandler {
 
-    private val mapReadyResult: MethodChannel.Result? = null
-
     private val methodChannel = MethodChannel(
         binaryMessenger,
         "app.tankste.osm/open_street_map_flutter_android"
@@ -94,7 +92,18 @@ class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: B
     }
 
     private fun setCamera(methodCall: MethodCall, result: MethodChannel.Result) {
+        val cameraPositionMap = methodCall.argument<Map<String, Any>>("cameraPosition") ?: emptyMap()
+        val cameraPosition = CameraPositionModel.fromMap(cameraPositionMap)
 
+        mapView.controller.setCenter(
+            GeoPoint(
+                cameraPosition.center.latitude,
+                cameraPosition.center.longitude
+            )
+        )
+        mapView.controller.setZoom(cameraPosition.zoom)
+
+        result.success(null)
     }
 
     private fun moveCamera(methodCall: MethodCall, result: MethodChannel.Result) {
@@ -132,7 +141,7 @@ class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: B
 //        startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 //        mapView.overlays.add(startMarker)
 
-        result.success(true)
+        result.success(null)
     }
 
     private fun setPolylines(methodCall: MethodCall, result: MethodChannel.Result) {
@@ -140,7 +149,6 @@ class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: B
     }
 
     private fun notifyNewCameraPosition() {
-        Log.d("debug", "android:: camera#moved")
         methodChannel.invokeMethod(
             "camera#moved", CameraPositionModel(
                 center = LatLngModel(mapView.mapCenter.latitude, mapView.mapCenter.longitude),

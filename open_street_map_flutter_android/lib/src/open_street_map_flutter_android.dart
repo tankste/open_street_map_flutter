@@ -80,10 +80,18 @@ class OpenStreetMapFlutterAndroid
   }
 
   @override
+  Future<void> setCameraPosition(CameraPosition cameraPosition) {
+    return _channel?.invokeMethod<void>('camera#set', <String, dynamic>{
+          'cameraPosition': cameraPosition.toMap()
+        }) ??
+        Future.value();
+  }
+
+  @override
   Future<void> setMarkers(Set<Marker> markers) {
     return _channel?.invokeMethod<void>('markers#set', <String, dynamic>{
-          'markers': markers.map((m) => m.toJson()).toList()
-        }) ??
+      'markers': markers.map((m) => m.toJson()).toList()
+    }) ??
         Future.value();
   }
 }

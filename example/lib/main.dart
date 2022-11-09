@@ -68,7 +68,6 @@ class _MyHomePageState extends State<MyHomePage> {
               initialCameraPosition: CameraPosition(
                   center: LatLng(52.3532222, 9.7582331), zoom: 13),
               onCameraMove: (CameraPosition cameraPosition) {
-                print("cameraPosition.toString(): ${cameraPosition.toString()}");
                 setState(() {
                   this.cameraPosition = cameraPosition.toString();
                 });

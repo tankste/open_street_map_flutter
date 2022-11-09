@@ -12,11 +12,10 @@ data class CameraPositionModel(
 
     companion object {
 
-//        @Suppress("UNCHECKED_CAST")
-//        fun fromMap(map: Map<String, Any>) = CameraPositionModel(
-//            id = (map["id"] as? String) ?: "",
-//            point = LatLngModel.fromMap(map["point"] as? Map<String, Any> ?: emptyMap()),
-//            iconBytes = (map["icon"] as? ByteArray)
-//        )
+        @Suppress("UNCHECKED_CAST")
+        fun fromMap(map: Map<String, Any>) = CameraPositionModel(
+            center = LatLngModel.fromMap(map["center"] as? Map<String, Any> ?: emptyMap()),
+            zoom = (map["zoom"] as? Double) ?: 0.0
+        )
     }
 }
