@@ -81,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Polyline(
                   id: "polyline-1",
                   color: Colors.orange,
-                  width: 4,
+                  width: 10,
                   points: {
                     LatLng(52.34841, 9.75083),
                     LatLng(52.35434, 9.74628),

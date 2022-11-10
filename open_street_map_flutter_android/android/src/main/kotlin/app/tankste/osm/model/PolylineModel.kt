@@ -17,7 +17,7 @@ data class PolylineModel(
             id = (map["id"] as? String) ?: "",
             points = (map["points"] as? List<Map<String, Any>>)?.map { e -> LatLngModel.fromMap(e) }
                 ?: emptyList(),
-            color = (map["color"] as? Int) ?: Color.BLUE,
+            color = (map["color"] as? Long)?.toInt() ?: Color.BLUE,
             width = (map["width"] as? Double)?.toFloat() ?: 0f,
         )
     }
