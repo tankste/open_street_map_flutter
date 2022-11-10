@@ -9,4 +9,5 @@ export 'package:open_street_map_flutter_platform_interface/open_street_map_flutt
     LatLng,
     LatLngBounds,
     Marker,
-    Polyline;
+    Polyline,
+    Style;

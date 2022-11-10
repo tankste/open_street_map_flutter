@@ -22,7 +22,10 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.TilesOverlay
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: BinaryMessenger) :
     PlatformView,
@@ -60,6 +63,13 @@ class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: B
         })
     }
 
+    private val locationOverlay =
+        MyLocationNewOverlay(GpsMyLocationProvider(context), mapView).apply {
+            mapView.overlays.add(this)
+        }
+
+    private var currentMarkerIds: MutableList<String> = mutableListOf()
+
     init {
         //TODO: get this from params or app settings
         // this should set by client of library not by the library itself
@@ -77,6 +87,8 @@ class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: B
         when (methodCall.method) {
             "style#set" ->
                 setMapStyle(methodCall, result)
+            "myLocation#set" ->
+                setMyLocation(methodCall, result)
             "camera#set" ->
                 setCamera(methodCall, result)
             "camera#move" ->
@@ -92,6 +104,16 @@ class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: B
         val styleMap = methodCall.argument<Map<String, Any>>("style") ?: emptyMap()
         val style = StyleModel.fromMap(styleMap)
         mapView.overlayManager.tilesOverlay.setColorFilter(if (style.invertColors) TilesOverlay.INVERT_COLORS else null)
+        result.success(null)
+    }
+
+    private fun setMyLocation(methodCall: MethodCall, result: MethodChannel.Result) {
+        val showMyLocation = methodCall.argument<Boolean>("showMyLocation") ?: false
+        if (showMyLocation) {
+            locationOverlay.enableMyLocation()
+        } else {
+            locationOverlay.disableMyLocation()
+        }
         result.success(null)
     }
 
@@ -112,7 +134,20 @@ class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: B
     }
 
     private fun moveCamera(methodCall: MethodCall, result: MethodChannel.Result) {
+        val cameraPositionMap =
+            methodCall.argument<Map<String, Any>>("cameraPosition") ?: emptyMap()
+        val cameraPosition = CameraPositionModel.fromMap(cameraPositionMap)
 
+        mapView.controller.animateTo(
+            GeoPoint(
+                cameraPosition.center.latitude,
+                cameraPosition.center.longitude
+            ),
+            cameraPosition.zoom,
+            null
+        )
+
+        result.success(null)
     }
 
     private fun setMarkers(methodCall: MethodCall, result: MethodChannel.Result) {
@@ -143,6 +178,7 @@ class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: B
         currentMarkerIds.clear()
 
         mapView.overlays.addAll(osmMarkers);
+        currentMarkerIds.addAll(osmMarkers.map { m -> m.id })
 
         result.success(null)
     }

@@ -88,6 +88,13 @@ class OpenStreetMapFlutterAndroid
   }
 
   @override
+  Future<void> setShowMyLocation(bool showMyLocation) {
+    return _channel?.invokeMethod<void>(
+        'myLocation#set', <String, dynamic>{'showMyLocation': showMyLocation}) ??
+        Future.value();
+  }
+
+  @override
   Future<void> setCameraPosition(CameraPosition cameraPosition) {
     return _channel?.invokeMethod<void>('camera#set',
             <String, dynamic>{'cameraPosition': cameraPosition.toMap()}) ??

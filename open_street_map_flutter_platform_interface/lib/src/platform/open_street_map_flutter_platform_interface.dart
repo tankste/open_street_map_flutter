@@ -41,6 +41,10 @@ abstract class OpenStreetMapFlutterPlatformInterface extends PlatformInterface {
     throw UnimplementedError('`setStyle(...)` has not been implemented.');
   }
 
+  Future<void> setShowMyLocation(bool showMyLocation) {
+    throw UnimplementedError('`setShowMyLocation(...)` has not been implemented.');
+  }
+
   Future<void> setMarkers(Set<Marker> markers) {
     throw UnimplementedError('`setMarkers(...)` has not been implemented.');
   }

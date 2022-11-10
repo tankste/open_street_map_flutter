@@ -5,6 +5,7 @@ class OpenStreetMap extends StatefulWidget {
   OpenStreetMap({
     Key? key,
     required this.initialCameraPosition,
+    this.enableMyLocation = false,
     this.onMapCreated,
     this.markers = const <Marker>{},
     this.polylines = const <Polyline>{},
@@ -15,6 +16,8 @@ class OpenStreetMap extends StatefulWidget {
   }) : super(key: key);
 
   final CameraPosition initialCameraPosition;
+
+  final bool enableMyLocation;
 
   final ArgumentCallback<int>? onMapCreated;
 
@@ -53,6 +56,7 @@ class OpenStreetMapState extends State<OpenStreetMap> {
     return platformInterface.init().then((value) {
       _initCamera();
       _updateStyle();
+      _updateShowMyLocation();
       _updateMarkers();
     });
   }
@@ -61,11 +65,16 @@ class OpenStreetMapState extends State<OpenStreetMap> {
   void didUpdateWidget(OpenStreetMap oldWidget) {
     super.didUpdateWidget(oldWidget);
     _updateStyle();
+    _updateShowMyLocation();
     _updateMarkers();
   }
 
   void _initCamera() {
     platformInterface.setCameraPosition(widget.initialCameraPosition);
+  }
+
+  void _updateShowMyLocation() {
+    platformInterface.setShowMyLocation(widget.enableMyLocation);
   }
 
   void _updateStyle() {
