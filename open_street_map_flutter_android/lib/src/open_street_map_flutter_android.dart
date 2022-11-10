@@ -83,7 +83,7 @@ class OpenStreetMapFlutterAndroid
   @override
   Future<void> setStyle(Style style) {
     return _channel?.invokeMethod<void>(
-            'style#mode', <String, dynamic>{'style': style.toMap()}) ??
+            'style#set', <String, dynamic>{'style': style.toMap()}) ??
         Future.value();
   }
 
