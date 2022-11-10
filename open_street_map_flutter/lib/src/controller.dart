@@ -1,17 +1,18 @@
-
 import 'package:open_street_map_flutter/open_street_map_flutter.dart';
 import 'package:open_street_map_flutter_platform_interface/open_street_map_flutter_platform_interface.dart';
 
 class OpenStreetMapController {
 
-  OpenStreetMapFlutterPlatformInterface platformInterface =
-      OpenStreetMapFlutterPlatformInterface.instance;
+  OpenStreetMapController(this.mapId, this.platformInterface);
+
+  int mapId;
+  OpenStreetMapFlutterPlatformInterface platformInterface;
 
   Future<void> setCamera(CameraPosition cameraPosition) {
-    return platformInterface.setCameraPosition(cameraPosition);
+    return platformInterface.setCameraPosition(mapId, cameraPosition);
   }
 
   Future<void> animateCamera(CameraPosition cameraPosition) {
-    return platformInterface.animateCameraPosition(cameraPosition);
+    return platformInterface.animateCameraPosition(mapId, cameraPosition);
   }
 }

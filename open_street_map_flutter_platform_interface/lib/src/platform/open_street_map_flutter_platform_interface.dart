@@ -20,44 +20,44 @@ abstract class OpenStreetMapFlutterPlatformInterface extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<void> init() {
+  Future<void> init(int mapId) {
     throw UnimplementedError('init() has not been implemented.');
   }
 
   Widget buildView(
-      // int creationId,
       {
+        required int mapId,
         required PlatformViewCreatedCallback onPlatformViewCreated,
         required CameraPosition initialCameraPosition,
         Set<Marker> markers = const <Marker>{},
         Set<Polyline> polylines = const <Polyline>{},
-        ArgumentCallback<CameraPosition>? onCameraMove = null,
+        ArgumentCallback<CameraPosition>? onCameraMove,
         // Map<String, dynamic> mapOptions = const <String, dynamic>{},
       }) {
     throw UnimplementedError('`buildView(...)` has not been implemented.');
   }
 
-  Future<void> setStyle(Style style) {
+  Future<void> setStyle(int mapId, Style style) {
     throw UnimplementedError('`setStyle(...)` has not been implemented.');
   }
 
-  Future<void> setShowMyLocation(bool showMyLocation) {
+  Future<void> setShowMyLocation(int mapId, bool showMyLocation) {
     throw UnimplementedError('`setShowMyLocation(...)` has not been implemented.');
   }
 
-  Future<void> setMarkers(Set<Marker> markers) {
+  Future<void> setMarkers(int mapId, Set<Marker> markers) {
     throw UnimplementedError('`setMarkers(...)` has not been implemented.');
   }
 
-  Future<void> setPolylines(Set<Polyline> polylines) {
+  Future<void> setPolylines(int mapId, Set<Polyline> polylines) {
     throw UnimplementedError('`setPolylines(...)` has not been implemented.');
   }
 
-  Future<void> setCameraPosition(CameraPosition camera) {
+  Future<void> setCameraPosition(int mapId, CameraPosition cameraPosition) {
     throw UnimplementedError('`setCameraPosition(...)` has not been implemented.');
   }
 
-  Future<void> animateCameraPosition(CameraPosition camera) {
+  Future<void> animateCameraPosition(int mapId, CameraPosition cameraPosition) {
     throw UnimplementedError('`animateCameraPosition(...)` has not been implemented.');
   }
 }

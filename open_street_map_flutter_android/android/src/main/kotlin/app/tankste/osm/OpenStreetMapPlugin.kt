@@ -9,7 +9,6 @@ import io.flutter.plugin.common.MethodChannel
 
 class OpenStreetMapPlugin : FlutterPlugin, ActivityAware {
 
-    private lateinit var channel: MethodChannel
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPluginBinding) {
         flutterPluginBinding
@@ -21,7 +20,7 @@ class OpenStreetMapPlugin : FlutterPlugin, ActivityAware {
     }
 
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
-        channel.setMethodCallHandler(null)
+
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
@@ -41,6 +40,6 @@ class OpenStreetMapPlugin : FlutterPlugin, ActivityAware {
     }
 
     companion object {
-        const final val VIEW_TYPE = "app.tankste.osm/open_street_map_flutter";
+        const val VIEW_TYPE = "app.tankste.osm/open_street_map_flutter"
     }
 }

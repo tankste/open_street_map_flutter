@@ -28,15 +28,14 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
-class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: BinaryMessenger) :
+class OpenStreetMapPlatformView(private val context: Context, channelId: Int, binaryMessenger: BinaryMessenger) :
     PlatformView,
     MethodChannel.MethodCallHandler {
 
     private val methodChannel = MethodChannel(
         binaryMessenger,
-        "app.tankste.osm/open_street_map_flutter_android"
+        "app.tankste.osm/open_street_map_flutter_android_$channelId"
     ).apply {
-        Log.d("debug", "INIT channel")
         setMethodCallHandler(this@OpenStreetMapPlatformView)
     }
 
@@ -66,6 +65,7 @@ class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: B
 
     private val locationOverlay =
         MyLocationNewOverlay(GpsMyLocationProvider(context), mapView).apply {
+            disableFollowLocation()
             mapView.overlays.add(this)
         }
 
@@ -76,7 +76,6 @@ class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: B
         //TODO: get this from params or app settings
         // this should set by client of library not by the library itself
         Configuration.getInstance().userAgentValue = "app.tankste.osm"
-        methodChannel.toString()
     }
 
     override fun getView(): View = mapView

@@ -10,37 +10,37 @@ class OpenStreetMapFlutterAndroid
         OpenStreetMapFlutterAndroid();
   }
 
-  MethodChannel? _channel;
+  final Map<int, MethodChannel> _channels = {};
 
-  ArgumentCallback<CameraPosition>? onCameraMove;
+  Map<int, ArgumentCallback<CameraPosition>?> onCameraMove = {};
+  Map<int, Map<String, VoidCallback?>> markerClickListeners = {};
 
-  Map<String, VoidCallback?> markerClickListeners = {};
-
-  MethodChannel ensureChannelInitialized() {
-    if (_channel == null) {
-      _channel =
-          MethodChannel('app.tankste.osm/open_street_map_flutter_android');
-      _channel!.setMethodCallHandler(_handleMethodCall);
+  MethodChannel ensureChannelInitialized(int mapId) {
+    if (_channels[mapId] == null) {
+      _channels[mapId] = MethodChannel(
+          'app.tankste.osm/open_street_map_flutter_android_$mapId');
+      _channels[mapId]!.setMethodCallHandler(
+          (methodCall) => _handleMethodCall(mapId, methodCall));
     }
-    return _channel!;
+    return _channels[mapId]!;
   }
 
   @override
-  Future<void> init() {
-    ensureChannelInitialized();
+  Future<void> init(int mapId) {
+    ensureChannelInitialized(mapId);
     return Future.value();
-    // return channel.invokeMethod<void>('map#waitForMap');
   }
 
   @override
   Widget buildView({
+    required int mapId,
     required PlatformViewCreatedCallback onPlatformViewCreated,
     required CameraPosition initialCameraPosition,
     Set<Marker> markers = const <Marker>{},
     Set<Polyline> polylines = const <Polyline>{},
     ArgumentCallback<CameraPosition>? onCameraMove,
   }) {
-    this.onCameraMove = onCameraMove;
+    this.onCameraMove[mapId] = onCameraMove;
 
     String viewType = "app.tankste.osm/open_street_map_flutter";
 
@@ -48,13 +48,12 @@ class OpenStreetMapFlutterAndroid
       viewType: viewType,
       onCreatePlatformView: (PlatformViewCreationParams params) {
         return PlatformViewsService.initExpensiveAndroidView(
-          id: params.id,
-          viewType: viewType,
-          layoutDirection: TextDirection.ltr,
-          // creationParams: creationParams,
-          // creationParamsCodec: const StandardMessageCodec(),
-          onFocus: () => params.onFocusChanged(true),
-        )
+            id: params.id,
+            viewType: viewType,
+            layoutDirection: TextDirection.ltr,
+            onFocus: () => params.onFocusChanged(true),
+            creationParams: {"channelId": mapId},
+            creationParamsCodec: const StandardMessageCodec())
           ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
           ..addOnPlatformViewCreatedListener(onPlatformViewCreated)
           ..create();
@@ -63,7 +62,7 @@ class OpenStreetMapFlutterAndroid
           (BuildContext context, PlatformViewController controller) {
         return AndroidViewSurface(
           controller: controller as AndroidViewController,
-          gestureRecognizers: {},
+          gestureRecognizers: const {},
           // gestureRecognizers: widgetConfiguration.gestureRecognizers,
           hitTestBehavior: PlatformViewHitTestBehavior.opaque,
         );
@@ -71,15 +70,15 @@ class OpenStreetMapFlutterAndroid
     );
   }
 
-  Future<dynamic> _handleMethodCall(MethodCall methodCall) {
+  Future<dynamic> _handleMethodCall(int mapId, MethodCall methodCall) {
     switch (methodCall.method) {
       case "camera#moved":
-        onCameraMove?.call(CameraPosition.fromMap(
+        onCameraMove[mapId]?.call(CameraPosition.fromMap(
             Map<String, dynamic>.from(methodCall.arguments)));
         return Future.value();
       case "marker#clicked":
         String id = methodCall.arguments["id"];
-        markerClickListeners[id]?.call();
+        markerClickListeners[mapId]?[id]?.call();
         return Future.value();
       default:
         throw MissingPluginException();
@@ -87,45 +86,47 @@ class OpenStreetMapFlutterAndroid
   }
 
   @override
-  Future<void> setStyle(Style style) {
-    return _channel?.invokeMethod<void>(
+  Future<void> setStyle(int mapId, Style style) {
+    return _channels[mapId]?.invokeMethod<void>(
             'style#set', <String, dynamic>{'style': style.toMap()}) ??
         Future.value();
   }
 
   @override
-  Future<void> setShowMyLocation(bool showMyLocation) {
-    return _channel?.invokeMethod<void>('myLocation#set',
+  Future<void> setShowMyLocation(int mapId, bool showMyLocation) {
+    return _channels[mapId]?.invokeMethod<void>('myLocation#set',
             <String, dynamic>{'showMyLocation': showMyLocation}) ??
         Future.value();
   }
 
   @override
-  Future<void> setCameraPosition(CameraPosition cameraPosition) {
-    return _channel?.invokeMethod<void>('camera#set',
+  Future<void> setCameraPosition(int mapId, CameraPosition cameraPosition) {
+    return _channels[mapId]?.invokeMethod<void>('camera#set',
             <String, dynamic>{'cameraPosition': cameraPosition.toMap()}) ??
         Future.value();
   }
 
   @override
-  Future<void> animateCameraPosition(CameraPosition cameraPosition) {
-    return _channel?.invokeMethod<void>('camera#move',
+  Future<void> animateCameraPosition(int mapId, CameraPosition cameraPosition) {
+    return _channels[mapId]?.invokeMethod<void>('camera#move',
             <String, dynamic>{'cameraPosition': cameraPosition.toMap()}) ??
         Future.value();
   }
 
   @override
-  Future<void> setMarkers(Set<Marker> markers) {
-    markerClickListeners = {for (var m in markers) m.id: m.onTap};
-    return _channel?.invokeMethod<void>('markers#set', <String, dynamic>{
+  Future<void> setMarkers(int mapId, Set<Marker> markers) {
+    markerClickListeners[mapId] = {for (var m in markers) m.id: m.onTap};
+    return _channels[mapId]?.invokeMethod<void>(
+            'markers#set', <String, dynamic>{
           'markers': markers.map((m) => m.toMap()).toList()
         }) ??
         Future.value();
   }
 
   @override
-  Future<void> setPolylines(Set<Polyline> polylines) {
-    return _channel?.invokeMethod<void>('polylines#set', <String, dynamic>{
+  Future<void> setPolylines(int mapId, Set<Polyline> polylines) {
+    return _channels[mapId]?.invokeMethod<void>(
+            'polylines#set', <String, dynamic>{
           'polylines': polylines.map((p) => p.toMap()).toList()
         }) ??
         Future.value();

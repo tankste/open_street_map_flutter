@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:open_street_map_flutter/src/controller.dart';
 import 'package:open_street_map_flutter_platform_interface/open_street_map_flutter_platform_interface.dart';
 
+int nextMapId = 0;
+
 class OpenStreetMap extends StatefulWidget {
   OpenStreetMap({
     Key? key,
@@ -39,12 +41,15 @@ class OpenStreetMap extends StatefulWidget {
 }
 
 class OpenStreetMapState extends State<OpenStreetMap> {
+  int mapId = nextMapId++;
+
   OpenStreetMapFlutterPlatformInterface platformInterface =
       OpenStreetMapFlutterPlatformInterface.instance;
 
   @override
   Widget build(BuildContext context) {
     return platformInterface.buildView(
+      mapId: mapId,
       onPlatformViewCreated: onPlatformViewCreated,
       initialCameraPosition: widget.initialCameraPosition,
       markers: widget.markers,
@@ -54,14 +59,15 @@ class OpenStreetMapState extends State<OpenStreetMap> {
   }
 
   Future<void> onPlatformViewCreated(int id) {
-    return platformInterface.init().then((value) {
+    return platformInterface.init(mapId).then((value) {
       _initCamera();
       _updateStyle();
       _updateShowMyLocation();
       _updateMarkers();
       _updatePolylines();
     }).then((_) {
-      widget.onMapCreated?.call(OpenStreetMapController());
+      widget.onMapCreated
+          ?.call(OpenStreetMapController(mapId, platformInterface));
     });
   }
 
@@ -75,22 +81,22 @@ class OpenStreetMapState extends State<OpenStreetMap> {
   }
 
   void _initCamera() {
-    platformInterface.setCameraPosition(widget.initialCameraPosition);
+    platformInterface.setCameraPosition(mapId, widget.initialCameraPosition);
   }
 
   void _updateShowMyLocation() {
-    platformInterface.setShowMyLocation(widget.enableMyLocation);
+    platformInterface.setShowMyLocation(mapId, widget.enableMyLocation);
   }
 
   void _updateStyle() {
-    platformInterface.setStyle(widget.style);
+    platformInterface.setStyle(mapId, widget.style);
   }
 
   void _updateMarkers() {
-    platformInterface.setMarkers(widget.markers);
+    platformInterface.setMarkers(mapId, widget.markers);
   }
 
   void _updatePolylines() {
-    platformInterface.setPolylines(widget.polylines);
+    platformInterface.setPolylines(mapId, widget.polylines);
   }
 }
