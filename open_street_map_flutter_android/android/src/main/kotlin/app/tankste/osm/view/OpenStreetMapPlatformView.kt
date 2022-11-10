@@ -41,7 +41,7 @@ class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: B
 
     private val mapView = MapView(context).apply {
         //TODO: make this configurable
-        zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+//        zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
         addMapListener(object : MapListener {
             override fun onScroll(event: ScrollEvent): Boolean {
                 //TODO: notify for

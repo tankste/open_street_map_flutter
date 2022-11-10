@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:open_street_map_flutter/src/controller.dart';
 import 'package:open_street_map_flutter_platform_interface/open_street_map_flutter_platform_interface.dart';
 
 class OpenStreetMap extends StatefulWidget {
@@ -19,7 +20,7 @@ class OpenStreetMap extends StatefulWidget {
 
   final bool enableMyLocation;
 
-  final ArgumentCallback<int>? onMapCreated;
+  final ArgumentCallback<OpenStreetMapController>? onMapCreated;
 
   final Set<Marker> markers;
 
@@ -58,6 +59,8 @@ class OpenStreetMapState extends State<OpenStreetMap> {
       _updateStyle();
       _updateShowMyLocation();
       _updateMarkers();
+    }).then((_) {
+      widget.onMapCreated?.call(OpenStreetMapController());
     });
   }
 

@@ -33,50 +33,61 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   ByteData? icon;
   String cameraPosition = "";
+  OpenStreetMapController? mapController;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
-        body: Column(
-          children: [
-            Expanded(
-                child: OpenStreetMap(
-              initialCameraPosition: CameraPosition(
-                  center: LatLng(52.3532222, 9.7582331), zoom: 13),
-              enableMyLocation: true,
-              style: Style(invertColors: false),
-              onCameraMove: (CameraPosition cameraPosition) {
-                setState(() {
-                  this.cameraPosition = cameraPosition.toString();
-                });
-              },
-              markers: {
-                Marker(
-                    id: "1",
-                    point: LatLng(52.3532222, 9.7582331),
-                    icon: icon,
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text("Clicked marker one."),
-                      ));
-                    }),
-                Marker(
-                    id: "2",
-                    point: LatLng(52.346984, 9.7584736),
-                    icon: icon,
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text("Clicked marker two."),
-                      ));
-                    }),
-              },
-            )),
-            Text("$cameraPosition"),
-          ],
-        ));
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+              child: OpenStreetMap(
+            initialCameraPosition:
+                CameraPosition(center: LatLng(52.3532222, 9.7582331), zoom: 13),
+            enableMyLocation: true,
+            style: Style(invertColors: false),
+            onMapCreated: (controller) {
+              this.mapController = controller;
+            },
+            onCameraMove: (CameraPosition cameraPosition) {
+              setState(() {
+                this.cameraPosition = cameraPosition.toString();
+              });
+            },
+            markers: {
+              Marker(
+                  id: "1",
+                  point: LatLng(52.3532222, 9.7582331),
+                  icon: icon,
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text("Clicked marker one."),
+                    ));
+                  }),
+              Marker(
+                  id: "2",
+                  point: LatLng(52.346984, 9.7584736),
+                  icon: icon,
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text("Clicked marker two."),
+                    ));
+                  }),
+            },
+          )),
+          Text("$cameraPosition"),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            mapController?.animateCamera(CameraPosition(
+                center: LatLng(52.3881111, 9.6944627), zoom: 17.0));
+          },
+          child: Icon(Icons.move_down_rounded)),
+    );
   }
 
   @override
