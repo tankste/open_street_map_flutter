@@ -14,6 +14,8 @@ class OpenStreetMapFlutterAndroid
 
   ArgumentCallback<CameraPosition>? onCameraMove;
 
+  Map<String, VoidCallback?> markerClickListeners = {};
+
   MethodChannel ensureChannelInitialized() {
     if (_channel == null) {
       _channel =
@@ -75,6 +77,10 @@ class OpenStreetMapFlutterAndroid
         onCameraMove?.call(CameraPosition.fromMap(
             Map<String, dynamic>.from(methodCall.arguments)));
         return Future.value();
+      case "marker#clicked":
+        String id = methodCall.arguments["id"];
+        markerClickListeners[id]?.call();
+        return Future.value();
       default:
         throw MissingPluginException();
     }
@@ -89,8 +95,8 @@ class OpenStreetMapFlutterAndroid
 
   @override
   Future<void> setShowMyLocation(bool showMyLocation) {
-    return _channel?.invokeMethod<void>(
-        'myLocation#set', <String, dynamic>{'showMyLocation': showMyLocation}) ??
+    return _channel?.invokeMethod<void>('myLocation#set',
+            <String, dynamic>{'showMyLocation': showMyLocation}) ??
         Future.value();
   }
 
@@ -110,6 +116,7 @@ class OpenStreetMapFlutterAndroid
 
   @override
   Future<void> setMarkers(Set<Marker> markers) {
+    markerClickListeners = {for (var m in markers) m.id: m.onTap};
     return _channel?.invokeMethod<void>('markers#set', <String, dynamic>{
           'markers': markers.map((m) => m.toJson()).toList()
         }) ??

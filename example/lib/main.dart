@@ -55,9 +55,23 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               markers: {
                 Marker(
-                    id: "1", point: LatLng(52.3532222, 9.7582331), icon: icon),
+                    id: "1",
+                    point: LatLng(52.3532222, 9.7582331),
+                    icon: icon,
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text("Clicked marker one."),
+                      ));
+                    }),
                 Marker(
-                    id: "2", point: LatLng(52.346984, 9.7584736), icon: icon),
+                    id: "2",
+                    point: LatLng(52.346984, 9.7584736),
+                    icon: icon,
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text("Clicked marker two."),
+                      ));
+                    }),
               },
             )),
             Text("$cameraPosition"),
