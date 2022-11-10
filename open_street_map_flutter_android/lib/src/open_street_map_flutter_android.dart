@@ -72,7 +72,8 @@ class OpenStreetMapFlutterAndroid
   Future<dynamic> _handleMethodCall(MethodCall methodCall) {
     switch (methodCall.method) {
       case "camera#moved":
-        onCameraMove?.call(CameraPosition.fromMap(Map<String, dynamic>.from(methodCall.arguments)));
+        onCameraMove?.call(CameraPosition.fromMap(
+            Map<String, dynamic>.from(methodCall.arguments)));
         return Future.value();
       default:
         throw MissingPluginException();
@@ -80,18 +81,31 @@ class OpenStreetMapFlutterAndroid
   }
 
   @override
+  Future<void> setStyle(Style style) {
+    return _channel?.invokeMethod<void>(
+            'style#mode', <String, dynamic>{'style': style.toMap()}) ??
+        Future.value();
+  }
+
+  @override
   Future<void> setCameraPosition(CameraPosition cameraPosition) {
-    return _channel?.invokeMethod<void>('camera#set', <String, dynamic>{
-          'cameraPosition': cameraPosition.toMap()
-        }) ??
+    return _channel?.invokeMethod<void>('camera#set',
+            <String, dynamic>{'cameraPosition': cameraPosition.toMap()}) ??
+        Future.value();
+  }
+
+  @override
+  Future<void> animateCameraPosition(CameraPosition cameraPosition) {
+    return _channel?.invokeMethod<void>('camera#move',
+            <String, dynamic>{'cameraPosition': cameraPosition.toMap()}) ??
         Future.value();
   }
 
   @override
   Future<void> setMarkers(Set<Marker> markers) {
     return _channel?.invokeMethod<void>('markers#set', <String, dynamic>{
-      'markers': markers.map((m) => m.toJson()).toList()
-    }) ??
+          'markers': markers.map((m) => m.toJson()).toList()
+        }) ??
         Future.value();
   }
 }

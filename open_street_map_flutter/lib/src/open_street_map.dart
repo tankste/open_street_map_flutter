@@ -11,6 +11,7 @@ class OpenStreetMap extends StatefulWidget {
     this.onCameraIdle,
     this.onCameraMove,
     this.onTap,
+    this.style = const Style(invertColors: false),
   }) : super(key: key);
 
   final CameraPosition initialCameraPosition;
@@ -26,6 +27,8 @@ class OpenStreetMap extends StatefulWidget {
   final ArgumentCallback<CameraPosition>? onCameraMove;
 
   final ArgumentCallback<LatLng>? onTap;
+
+  final Style style;
 
   @override
   State createState() => OpenStreetMapState();
@@ -43,28 +46,13 @@ class OpenStreetMapState extends State<OpenStreetMap> {
       markers: widget.markers,
       polylines: widget.polylines,
       onCameraMove: widget.onCameraMove,
-      // // _mapId,
-      // mapObjects: MapObjects(
-      //   markers: widget.markers,
-      //   polylines: widget.polylines,
-      // ),
-      // mapConfiguration: _mapConfiguration,
     );
   }
-
-  @override
-  void initState() {
-    super.initState();
-    // _mapConfiguration = _configurationFromWidget(widget);
-  }
-
-// MapConfiguration _configurationFromWidget(OpenStreetMap widget) {
-//
-// }
 
   Future<void> onPlatformViewCreated(int id) {
     return platformInterface.init().then((value) {
       _initCamera();
+      _updateStyle();
       _updateMarkers();
     });
   }
@@ -72,11 +60,16 @@ class OpenStreetMapState extends State<OpenStreetMap> {
   @override
   void didUpdateWidget(OpenStreetMap oldWidget) {
     super.didUpdateWidget(oldWidget);
+    _updateStyle();
     _updateMarkers();
   }
 
   void _initCamera() {
     platformInterface.setCameraPosition(widget.initialCameraPosition);
+  }
+
+  void _updateStyle() {
+    platformInterface.setStyle(widget.style);
   }
 
   void _updateMarkers() {

@@ -9,6 +9,7 @@ import android.view.View
 import app.tankste.osm.model.CameraPositionModel
 import app.tankste.osm.model.LatLngModel
 import app.tankste.osm.model.MarkerModel
+import app.tankste.osm.model.StyleModel
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -88,11 +89,15 @@ class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: B
     }
 
     private fun setMapStyle(methodCall: MethodCall, result: MethodChannel.Result) {
-
+        val styleMap = methodCall.argument<Map<String, Any>>("style") ?: emptyMap()
+        val style = StyleModel.fromMap(styleMap)
+        mapView.overlayManager.tilesOverlay.setColorFilter(if (style.invertColors) TilesOverlay.INVERT_COLORS else null)
+        result.success(null)
     }
 
     private fun setCamera(methodCall: MethodCall, result: MethodChannel.Result) {
-        val cameraPositionMap = methodCall.argument<Map<String, Any>>("cameraPosition") ?: emptyMap()
+        val cameraPositionMap =
+            methodCall.argument<Map<String, Any>>("cameraPosition") ?: emptyMap()
         val cameraPosition = CameraPositionModel.fromMap(cameraPositionMap)
 
         mapView.controller.setCenter(
@@ -129,17 +134,15 @@ class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: B
                         )
                         setIcon(icon)
                     }
+
+                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 }
             }
 
-        mapView.overlays.clear()
-        mapView.overlays.addAll(osmMarkers);
+        mapView.overlays.removeAll { o -> o is Marker && currentMarkerIds.contains(o.id) }
+        currentMarkerIds.clear()
 
-//
-//        val startMarker = Marker(mapView)
-//        startMarker.position = startPoint
-//        startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-//        mapView.overlays.add(startMarker)
+        mapView.overlays.addAll(osmMarkers);
 
         result.success(null)
     }
