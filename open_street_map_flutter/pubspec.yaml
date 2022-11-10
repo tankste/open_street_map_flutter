@@ -15,10 +15,18 @@ dependencies:
 #  open_street_map_flutter_ios: ^2.1.10
 #  open_street_map_flutter_platform_interface: ^2.2.1
   open_street_map_flutter_android:
-    path: '../open_street_map_flutter_android'
+#    path: '../open_street_map_flutter_android'
+    git:
+      url: https://github.com/tankste/open_street_map_flutter.git
+      ref: main
+      path: open_street_map_flutter_android
 
   open_street_map_flutter_platform_interface:
-    path: '../open_street_map_flutter_platform_interface'
+#    path: '../open_street_map_flutter_platform_interface'
+    git:
+      url: https://github.com/tankste/open_street_map_flutter.git
+      ref: main
+      path: open_street_map_flutter_platform_interface
 
 dev_dependencies:
   flutter_test:
