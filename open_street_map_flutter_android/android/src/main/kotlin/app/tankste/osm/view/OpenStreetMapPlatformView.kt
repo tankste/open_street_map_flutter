@@ -170,6 +170,7 @@ class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: B
                         setIcon(icon)
                     }
 
+                    setInfoWindow(null)
                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 }
             }
