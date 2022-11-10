@@ -172,6 +172,7 @@ class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: B
                         setIcon(icon)
                     }
 
+                    infoWindow = null
                     setOnMarkerClickListener { clickedMarker, _ ->
                         methodChannel.invokeMethod(
                             "marker#clicked", mapOf("id" to clickedMarker.id)
@@ -179,7 +180,6 @@ class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: B
                         true
                     }
 
-                    infoWindow = null
                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 }
             }
