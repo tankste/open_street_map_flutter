@@ -59,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
             },
             markers: {
               Marker(
-                  id: "1",
+                  id: "marker-1",
                   point: LatLng(52.3532222, 9.7582331),
                   icon: icon,
                   onTap: () {
@@ -68,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ));
                   }),
               Marker(
-                  id: "2",
+                  id: "marker-2",
                   point: LatLng(52.346984, 9.7584736),
                   icon: icon,
                   onTap: () {
@@ -76,6 +76,17 @@ class _MyHomePageState extends State<MyHomePage> {
                       content: Text("Clicked marker two."),
                     ));
                   }),
+            },
+            polylines: {
+              Polyline(
+                  id: "polyline-1",
+                  color: Colors.orange,
+                  width: 4,
+                  points: {
+                    LatLng(52.34841, 9.75083),
+                    LatLng(52.35434, 9.74628),
+                    LatLng(52.35681, 9.76301)
+                  })
             },
           )),
           Text("$cameraPosition"),

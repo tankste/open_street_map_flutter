@@ -59,6 +59,7 @@ class OpenStreetMapState extends State<OpenStreetMap> {
       _updateStyle();
       _updateShowMyLocation();
       _updateMarkers();
+      _updatePolylines();
     }).then((_) {
       widget.onMapCreated?.call(OpenStreetMapController());
     });
@@ -70,6 +71,7 @@ class OpenStreetMapState extends State<OpenStreetMap> {
     _updateStyle();
     _updateShowMyLocation();
     _updateMarkers();
+    _updatePolylines();
   }
 
   void _initCamera() {
@@ -86,5 +88,9 @@ class OpenStreetMapState extends State<OpenStreetMap> {
 
   void _updateMarkers() {
     platformInterface.setMarkers(widget.markers);
+  }
+
+  void _updatePolylines() {
+    platformInterface.setPolylines(widget.polylines);
   }
 }

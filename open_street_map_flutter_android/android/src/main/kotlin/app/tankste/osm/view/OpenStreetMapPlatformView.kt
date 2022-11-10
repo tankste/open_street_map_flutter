@@ -9,6 +9,7 @@ import android.view.View
 import app.tankste.osm.model.CameraPositionModel
 import app.tankste.osm.model.LatLngModel
 import app.tankste.osm.model.MarkerModel
+import app.tankste.osm.model.PolylineModel
 import app.tankste.osm.model.StyleModel
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
@@ -19,9 +20,9 @@ import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
 import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.TilesOverlay
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 
@@ -69,6 +70,7 @@ class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: B
         }
 
     private var currentMarkerIds: MutableList<String> = mutableListOf()
+    private var currentPolylineIds: MutableList<String> = mutableListOf()
 
     init {
         //TODO: get this from params or app settings
@@ -174,11 +176,10 @@ class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: B
                         methodChannel.invokeMethod(
                             "marker#clicked", mapOf("id" to clickedMarker.id)
                         )
-
                         true
                     }
 
-                    setInfoWindow(null)
+                    infoWindow = null
                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 }
             }
@@ -186,14 +187,34 @@ class OpenStreetMapPlatformView(private val context: Context, binaryMessenger: B
         mapView.overlays.removeAll { o -> o is Marker && currentMarkerIds.contains(o.id) }
         currentMarkerIds.clear()
 
-        mapView.overlays.addAll(osmMarkers);
+        mapView.overlays.addAll(osmMarkers)
         currentMarkerIds.addAll(osmMarkers.map { m -> m.id })
 
         result.success(null)
     }
 
     private fun setPolylines(methodCall: MethodCall, result: MethodChannel.Result) {
+        val polylinesList = methodCall.argument<List<Map<String, Any>>>("polylines") ?: emptyList()
+        val osmPolylines = polylinesList.map(PolylineModel::fromMap)
+            .map { polyline ->
+                Polyline(mapView).apply {
+                    id = polyline.id
+                    setPoints(polyline.points.map { p -> GeoPoint(p.latitude, p.longitude) })
 
+                    outlinePaint.color = polyline.color
+                    outlinePaint.strokeWidth = polyline.width
+
+                    infoWindow = null
+                }
+            }
+
+        mapView.overlays.removeAll { o -> o is Marker && currentPolylineIds.contains(o.id) }
+        currentPolylineIds.clear()
+
+        mapView.overlays.addAll(osmPolylines)
+        currentPolylineIds.addAll(osmPolylines.map { m -> m.id })
+
+        result.success(null)
     }
 
     private fun notifyNewCameraPosition() {

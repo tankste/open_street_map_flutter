@@ -50,6 +50,7 @@ dependencies {
 //    implementation files('/usr/local/Caskroom/flutter/2.2.1/flutter/bin/cache/artifacts/engine/android-x64/flutter.jar')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "androidx.annotation:annotation:1.5.0"
 
     // Open Street Map - https://github.com/osmdroid/osmdroid
     implementation "org.osmdroid:osmdroid-android:6.1.14"

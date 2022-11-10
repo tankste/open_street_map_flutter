@@ -118,7 +118,15 @@ class OpenStreetMapFlutterAndroid
   Future<void> setMarkers(Set<Marker> markers) {
     markerClickListeners = {for (var m in markers) m.id: m.onTap};
     return _channel?.invokeMethod<void>('markers#set', <String, dynamic>{
-          'markers': markers.map((m) => m.toJson()).toList()
+          'markers': markers.map((m) => m.toMap()).toList()
+        }) ??
+        Future.value();
+  }
+
+  @override
+  Future<void> setPolylines(Set<Polyline> polylines) {
+    return _channel?.invokeMethod<void>('polylines#set', <String, dynamic>{
+          'polylines': polylines.map((p) => p.toMap()).toList()
         }) ??
         Future.value();
   }
