@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' show objectRuntimeType;
 
 class LatLng {
   static LatLng fromMap(Map<String, dynamic> map) => LatLng(
@@ -18,8 +17,7 @@ class LatLng {
   final double longitude;
 
   @override
-  String toString() =>
-      'LatLng($latitude, $longitude)';
+  String toString() => 'LatLng($latitude, $longitude)';
 
   @override
   bool operator ==(Object other) {
@@ -66,7 +64,7 @@ class LatLngBounds {
 
   @override
   String toString() {
-    return '${objectRuntimeType(this, 'LatLngBounds')}($southwest, $northeast)';
+    return 'LatLngBounds($southwest, $northeast)';
   }
 
   @override
@@ -78,4 +76,10 @@ class LatLngBounds {
 
   @override
   int get hashCode => Object.hash(southwest, northeast);
+
+
+  Map<String, dynamic> toMap() =>
+      {'southwest': southwest.toMap(), 'northeast': northeast.toMap()};
+
+  Map<String, dynamic> toJson() => toMap();
 }

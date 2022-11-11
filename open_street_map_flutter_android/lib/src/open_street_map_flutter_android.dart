@@ -114,6 +114,13 @@ class OpenStreetMapFlutterAndroid
   }
 
   @override
+  Future<void> animateCameraBounds(int mapId, LatLngBounds bounds, int padding) {
+    return _channels[mapId]?.invokeMethod<void>('camera#moveBounds',
+            <String, dynamic>{'bounds': bounds.toMap(), 'padding': padding}) ??
+        Future.value();
+  }
+
+  @override
   Future<void> setMarkers(int mapId, Set<Marker> markers) {
     markerClickListeners[mapId] = {for (var m in markers) m.id: m.onTap};
     return _channels[mapId]?.invokeMethod<void>(

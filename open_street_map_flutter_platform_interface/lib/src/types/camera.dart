@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart' show objectRuntimeType;
-
 import 'types.dart';
 
 class CameraPosition {

@@ -24,16 +24,14 @@ abstract class OpenStreetMapFlutterPlatformInterface extends PlatformInterface {
     throw UnimplementedError('init() has not been implemented.');
   }
 
-  Widget buildView(
-      {
-        required int mapId,
-        required PlatformViewCreatedCallback onPlatformViewCreated,
-        required CameraPosition initialCameraPosition,
-        Set<Marker> markers = const <Marker>{},
-        Set<Polyline> polylines = const <Polyline>{},
-        ArgumentCallback<CameraPosition>? onCameraMove,
-        // Map<String, dynamic> mapOptions = const <String, dynamic>{},
-      }) {
+  Widget buildView({
+    required int mapId,
+    required PlatformViewCreatedCallback onPlatformViewCreated,
+    required CameraPosition initialCameraPosition,
+    Set<Marker> markers = const <Marker>{},
+    Set<Polyline> polylines = const <Polyline>{},
+    ArgumentCallback<CameraPosition>? onCameraMove,
+  }) {
     throw UnimplementedError('`buildView(...)` has not been implemented.');
   }
 
@@ -42,7 +40,8 @@ abstract class OpenStreetMapFlutterPlatformInterface extends PlatformInterface {
   }
 
   Future<void> setShowMyLocation(int mapId, bool showMyLocation) {
-    throw UnimplementedError('`setShowMyLocation(...)` has not been implemented.');
+    throw UnimplementedError(
+        '`setShowMyLocation(...)` has not been implemented.');
   }
 
   Future<void> setMarkers(int mapId, Set<Marker> markers) {
@@ -54,10 +53,18 @@ abstract class OpenStreetMapFlutterPlatformInterface extends PlatformInterface {
   }
 
   Future<void> setCameraPosition(int mapId, CameraPosition cameraPosition) {
-    throw UnimplementedError('`setCameraPosition(...)` has not been implemented.');
+    throw UnimplementedError(
+        '`setCameraPosition(...)` has not been implemented.');
   }
 
   Future<void> animateCameraPosition(int mapId, CameraPosition cameraPosition) {
-    throw UnimplementedError('`animateCameraPosition(...)` has not been implemented.');
+    throw UnimplementedError(
+        '`animateCameraPosition(...)` has not been implemented.');
+  }
+
+  Future<void> animateCameraBounds(
+      int mapId, LatLngBounds bounds, int padding) {
+    throw UnimplementedError(
+        '`animateCameraBounds(...)` has not been implemented.');
   }
 }

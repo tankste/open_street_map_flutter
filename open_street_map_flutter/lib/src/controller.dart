@@ -15,4 +15,8 @@ class OpenStreetMapController {
   Future<void> animateCamera(CameraPosition cameraPosition) {
     return platformInterface.animateCameraPosition(mapId, cameraPosition);
   }
+
+  Future<void> animateCameraToBounds(LatLngBounds bounds, int padding) {
+    return platformInterface.animateCameraBounds(mapId, bounds, padding);
+  }
 }

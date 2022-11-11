@@ -10,7 +10,7 @@ class Marker {
   final VoidCallback? onTap;
 
   Map<String, dynamic> toMap() =>
-      {'id': id, 'point': point.toJson(), 'icon': icon?.buffer.asUint8List()};
+      {'id': id, 'point': point.toMap(), 'icon': icon?.buffer.asUint8List()};
 
   Map<String, dynamic> toJson() => toMap();
 }

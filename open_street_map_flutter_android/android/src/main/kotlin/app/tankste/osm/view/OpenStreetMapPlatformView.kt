@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.View
 import app.tankste.osm.model.CameraPositionModel
+import app.tankste.osm.model.LatLngBoundsModel
 import app.tankste.osm.model.LatLngModel
 import app.tankste.osm.model.MarkerModel
 import app.tankste.osm.model.PolylineModel
@@ -19,6 +20,7 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
+import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
@@ -28,7 +30,11 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
-class OpenStreetMapPlatformView(private val context: Context, channelId: Int, binaryMessenger: BinaryMessenger) :
+class OpenStreetMapPlatformView(
+    private val context: Context,
+    channelId: Int,
+    binaryMessenger: BinaryMessenger
+) :
     PlatformView,
     MethodChannel.MethodCallHandler {
 
@@ -94,6 +100,8 @@ class OpenStreetMapPlatformView(private val context: Context, channelId: Int, bi
                 setCamera(methodCall, result)
             "camera#move" ->
                 moveCamera(methodCall, result)
+            "camera#moveBounds" ->
+                moveCameraBounds(methodCall, result)
             "markers#set" ->
                 setMarkers(methodCall, result)
             "polylines#set" ->
@@ -147,6 +155,29 @@ class OpenStreetMapPlatformView(private val context: Context, channelId: Int, bi
             cameraPosition.zoom,
             null
         )
+
+        result.success(null)
+    }
+
+    private fun moveCameraBounds(methodCall: MethodCall, result: MethodChannel.Result) {
+        val boundsMap =
+            methodCall.argument<Map<String, Any>>("bounds") ?: emptyMap()
+        val padding =
+            methodCall.argument<Int>("padding") ?: 0
+        val bounds = LatLngBoundsModel.fromMap(boundsMap)
+
+        val osmBoundingBox = BoundingBox(
+            bounds.northeast.latitude,
+            bounds.northeast.longitude,
+            bounds.southwest.latitude,
+            bounds.southwest.longitude
+        )
+
+        mapView.controller.animateTo(
+            osmBoundingBox.centerWithDateLine
+        )
+
+        mapView.zoomToBoundingBox(osmBoundingBox, true, padding)
 
         result.success(null)
     }
