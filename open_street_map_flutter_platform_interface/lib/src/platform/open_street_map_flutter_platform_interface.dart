@@ -30,7 +30,9 @@ abstract class OpenStreetMapFlutterPlatformInterface extends PlatformInterface {
     required CameraPosition initialCameraPosition,
     Set<Marker> markers = const <Marker>{},
     Set<Polyline> polylines = const <Polyline>{},
+    VoidCallback? onCameraMoveStarted,
     ArgumentCallback<CameraPosition>? onCameraMove,
+    ArgumentCallback<CameraPosition>? onCameraIdle,
   }) {
     throw UnimplementedError('`buildView(...)` has not been implemented.');
   }

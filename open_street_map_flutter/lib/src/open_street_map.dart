@@ -5,15 +5,16 @@ import 'package:open_street_map_flutter_platform_interface/open_street_map_flutt
 int nextMapId = 0;
 
 class OpenStreetMap extends StatefulWidget {
-  OpenStreetMap({
+  const OpenStreetMap({
     Key? key,
     required this.initialCameraPosition,
     this.enableMyLocation = false,
     this.onMapCreated,
     this.markers = const <Marker>{},
     this.polylines = const <Polyline>{},
-    this.onCameraIdle,
+    this.onCameraMoveStarted,
     this.onCameraMove,
+    this.onCameraIdle,
     this.onTap,
     this.style = const Style(invertColors: false),
   }) : super(key: key);
@@ -28,9 +29,11 @@ class OpenStreetMap extends StatefulWidget {
 
   final Set<Polyline> polylines;
 
-  final VoidCallback? onCameraIdle;
+  final VoidCallback? onCameraMoveStarted;
 
   final ArgumentCallback<CameraPosition>? onCameraMove;
+
+  final ArgumentCallback<CameraPosition>? onCameraIdle;
 
   final ArgumentCallback<LatLng>? onTap;
 
@@ -54,7 +57,9 @@ class OpenStreetMapState extends State<OpenStreetMap> {
       initialCameraPosition: widget.initialCameraPosition,
       markers: widget.markers,
       polylines: widget.polylines,
+      onCameraMoveStarted: widget.onCameraMoveStarted,
       onCameraMove: widget.onCameraMove,
+      onCameraIdle: widget.onCameraIdle,
     );
   }
 

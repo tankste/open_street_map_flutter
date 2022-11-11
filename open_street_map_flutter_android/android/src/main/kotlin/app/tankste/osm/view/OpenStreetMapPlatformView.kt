@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.util.Log
 import android.view.View
 import app.tankste.osm.model.CameraPositionModel
 import app.tankste.osm.model.LatLngBoundsModel
@@ -17,18 +16,21 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.platform.PlatformView
 import org.osmdroid.config.Configuration
+import org.osmdroid.events.DelayedMapListener
 import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.TilesOverlay
+import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
-
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+
 
 class OpenStreetMapPlatformView(
     private val context: Context,
@@ -47,26 +49,59 @@ class OpenStreetMapPlatformView(
 
     private val mapView = MapView(context).apply {
         //TODO: make this configurable
-//        zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+        zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+
+        //TODO: make this configurable
+        val rotationGestureOverlay = RotationGestureOverlay(this)
+        rotationGestureOverlay.isEnabled = true
+        overlays.add(rotationGestureOverlay)
+
+        //TODO: make this configurable
+        setMultiTouchControls(true)
+
+        // Camera moved
         addMapListener(object : MapListener {
             override fun onScroll(event: ScrollEvent): Boolean {
-                //TODO: notify for
-                //  1. Camera move started
-                //  2. Camera moving
-                //  3. Camera idle
-                notifyNewCameraPosition()
+                if (!isMapMoving) {
+                    notifyCameraStartMoving()
+                }
+
+                isMapMoving = true
+
+                notifyCameraMoved()
                 return false
             }
 
             override fun onZoom(event: ZoomEvent): Boolean {
-                //TODO: notify for
-                //  1. Camera move started
-                //  2. Camera moving
-                //  3. Camera idle
-                notifyNewCameraPosition()
+                if (!isMapMoving) {
+                    notifyCameraStartMoving()
+                }
+
+                isMapMoving = true
+
+                notifyCameraMoved()
                 return false
             }
         })
+
+        // Camera idle
+        addMapListener(
+            DelayedMapListener(object : MapListener {
+                override fun onScroll(event: ScrollEvent): Boolean {
+                    isMapMoving = false
+
+                    notifyCameraIdle()
+                    return false
+                }
+
+                override fun onZoom(event: ZoomEvent): Boolean {
+                    isMapMoving = false
+
+                    notifyCameraIdle()
+                    return false
+                }
+            }, 200)
+        )
     }
 
     private val locationOverlay =
@@ -77,6 +112,7 @@ class OpenStreetMapPlatformView(
 
     private var currentMarkerIds: MutableList<String> = mutableListOf()
     private var currentPolylineIds: MutableList<String> = mutableListOf()
+    private var isMapMoving = false
 
     init {
         //TODO: get this from params or app settings
@@ -247,9 +283,24 @@ class OpenStreetMapPlatformView(
         result.success(null)
     }
 
-    private fun notifyNewCameraPosition() {
+    private fun notifyCameraStartMoving() {
+        methodChannel.invokeMethod(
+            "camera#startMoving", null
+        )
+    }
+
+    private fun notifyCameraMoved() {
         methodChannel.invokeMethod(
             "camera#moved", CameraPositionModel(
+                center = LatLngModel(mapView.mapCenter.latitude, mapView.mapCenter.longitude),
+                zoom = mapView.zoomLevelDouble,
+            ).toMap()
+        )
+    }
+
+    private fun notifyCameraIdle() {
+        methodChannel.invokeMethod(
+            "camera#idle", CameraPositionModel(
                 center = LatLngModel(mapView.mapCenter.latitude, mapView.mapCenter.longitude),
                 zoom = mapView.zoomLevelDouble,
             ).toMap()

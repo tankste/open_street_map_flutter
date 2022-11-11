@@ -12,7 +12,9 @@ class OpenStreetMapFlutterAndroid
 
   final Map<int, MethodChannel> _channels = {};
 
+  Map<int, VoidCallback?> onCameraMoveStarted = {};
   Map<int, ArgumentCallback<CameraPosition>?> onCameraMove = {};
+  Map<int, ArgumentCallback<CameraPosition>?> onCameraIdle = {};
   Map<int, Map<String, VoidCallback?>> markerClickListeners = {};
 
   MethodChannel ensureChannelInitialized(int mapId) {
@@ -38,9 +40,13 @@ class OpenStreetMapFlutterAndroid
     required CameraPosition initialCameraPosition,
     Set<Marker> markers = const <Marker>{},
     Set<Polyline> polylines = const <Polyline>{},
+    VoidCallback? onCameraMoveStarted,
     ArgumentCallback<CameraPosition>? onCameraMove,
+    ArgumentCallback<CameraPosition>? onCameraIdle,
   }) {
+    this.onCameraMoveStarted[mapId] = onCameraMoveStarted;
     this.onCameraMove[mapId] = onCameraMove;
+    this.onCameraIdle[mapId] = onCameraIdle;
 
     String viewType = "app.tankste.osm/open_street_map_flutter";
 
@@ -72,8 +78,15 @@ class OpenStreetMapFlutterAndroid
 
   Future<dynamic> _handleMethodCall(int mapId, MethodCall methodCall) {
     switch (methodCall.method) {
+      case "camera#startMoving":
+        onCameraMoveStarted[mapId]?.call();
+        return Future.value();
       case "camera#moved":
         onCameraMove[mapId]?.call(CameraPosition.fromMap(
+            Map<String, dynamic>.from(methodCall.arguments)));
+        return Future.value();
+      case "camera#idle":
+        onCameraIdle[mapId]?.call(CameraPosition.fromMap(
             Map<String, dynamic>.from(methodCall.arguments)));
         return Future.value();
       case "marker#clicked":
@@ -114,7 +127,8 @@ class OpenStreetMapFlutterAndroid
   }
 
   @override
-  Future<void> animateCameraBounds(int mapId, LatLngBounds bounds, int padding) {
+  Future<void> animateCameraBounds(
+      int mapId, LatLngBounds bounds, int padding) {
     return _channels[mapId]?.invokeMethod<void>('camera#moveBounds',
             <String, dynamic>{'bounds': bounds.toMap(), 'padding': padding}) ??
         Future.value();
